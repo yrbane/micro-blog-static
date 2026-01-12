@@ -1219,6 +1219,57 @@
         border-bottom: none;
     }
 
+    /* Sortable table headers */
+    .table th.sortable {
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+        padding-right: var(--space-6);
+    }
+
+    .table th.sortable:hover {
+        color: var(--color-text);
+        background: var(--color-bg-elevated);
+    }
+
+    .table th.sortable .sort-icon::after {
+        content: '⇅';
+        position: absolute;
+        right: var(--space-2);
+        opacity: 0.3;
+        font-size: var(--text-sm);
+    }
+
+    .table th.sortable.sort-asc .sort-icon::after {
+        content: '↑';
+        opacity: 1;
+    }
+
+    .table th.sortable.sort-desc .sort-icon::after {
+        content: '↓';
+        opacity: 1;
+    }
+
+    /* Search box */
+    .search-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .search-box svg {
+        position: absolute;
+        left: var(--space-3);
+        color: var(--color-text-muted);
+        pointer-events: none;
+    }
+
+    .search-box .form-input {
+        padding-left: var(--space-10);
+        width: 100%;
+        max-width: 400px;
+    }
+
     /* Badges */
     .badge {
         display: inline-flex;

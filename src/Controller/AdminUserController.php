@@ -69,7 +69,13 @@ class AdminUserController extends BaseController
         $html = $this->render('admin/users/form', [
             'page_title' => 'Nouvel utilisateur',
             'user' => $currentUser->toArray(),
-            'edit_user' => null,
+            'edit_user' => [
+                'id' => null,
+                'username' => '',
+                'email' => '',
+                'role' => '',
+                'is_active' => true,
+            ],
             'roles' => $this->getRolesArray(),
             'errors' => [],
         ]);
@@ -100,6 +106,7 @@ class AdminUserController extends BaseController
                 'page_title' => 'Nouvel utilisateur',
                 'user' => $currentUser->toArray(),
                 'edit_user' => [
+                    'id' => null,
                     'username' => $username,
                     'email' => $email,
                     'role' => $role,
@@ -125,6 +132,7 @@ class AdminUserController extends BaseController
                 'page_title' => 'Nouvel utilisateur',
                 'user' => $currentUser->toArray(),
                 'edit_user' => [
+                    'id' => null,
                     'username' => $username,
                     'email' => $email,
                     'role' => $role,
@@ -147,7 +155,7 @@ class AdminUserController extends BaseController
             return new Response('', 302, ['Location: /admin']);
         }
 
-        $id = (int) $request->getAttribute('id');
+        $id = (int) $request->getRouteParam('id');
         $editUser = $auth->findUserById($id);
 
         if ($editUser === null) {
@@ -176,7 +184,7 @@ class AdminUserController extends BaseController
             return new Response('', 302, ['Location: /admin']);
         }
 
-        $id = (int) $request->getAttribute('id');
+        $id = (int) $request->getRouteParam('id');
         $editUser = $auth->findUserById($id);
 
         if ($editUser === null) {
@@ -260,7 +268,7 @@ class AdminUserController extends BaseController
             return new Response('', 302, ['Location: /admin']);
         }
 
-        $id = (int) $request->getAttribute('id');
+        $id = (int) $request->getRouteParam('id');
 
         // Ne pas permettre de supprimer son propre compte
         if ($id === $currentUser->id) {

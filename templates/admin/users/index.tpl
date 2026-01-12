@@ -17,6 +17,18 @@
     </div>
 </div>
 
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="search-box">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input type="text" id="userSearch" class="form-input" placeholder="Rechercher par nom ou email...">
+        </div>
+    </div>
+</div>
+
 [% if flash_success %]
 <div class="alert alert-success" data-auto-dismiss="5000">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -46,17 +58,17 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Utilisateur</th>
-                        <th>Email</th>
-                        <th>Rôle</th>
-                        <th>Statut</th>
-                        <th>Dernière connexion</th>
+                        <th class="sortable" data-sort="username">Utilisateur <span class="sort-icon"></span></th>
+                        <th class="sortable" data-sort="email">Email <span class="sort-icon"></span></th>
+                        <th class="sortable" data-sort="role">Rôle <span class="sort-icon"></span></th>
+                        <th class="sortable" data-sort="status">Statut <span class="sort-icon"></span></th>
+                        <th class="sortable" data-sort="last_login">Dernière connexion <span class="sort-icon"></span></th>
                         <th class="text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="usersTableBody">
                     [% for u in users %]
-                    <tr>
+                    <tr data-username="[[ u.username ]]" data-email="[[ u.email ]]" data-role="[[ u.role ]]" data-status="[% if u.is_active %]1[% else %]0[% endif %]" data-last-login="[[ u.last_login_at ]]">
                         <td>
                             <div class="user-cell">
                                 <div class="user-avatar">[[ u.initial ]]</div>
@@ -114,4 +126,90 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var searchInput = document.getElementById('userSearch');
+    var tableBody = document.getElementById('usersTableBody');
+    var headers = document.querySelectorAll('th.sortable');
+    var currentSort = { column: null, direction: 'asc' };
+
+    // Recherche
+    if (searchInput && tableBody) {
+        searchInput.addEventListener('input', function() {
+            var query = this.value.toLowerCase();
+            var rows = tableBody.querySelectorAll('tr');
+
+            rows.forEach(function(row) {
+                var username = (row.dataset.username || '').toLowerCase();
+                var email = (row.dataset.email || '').toLowerCase();
+                var match = username.indexOf(query) !== -1 || email.indexOf(query) !== -1;
+                row.style.display = match ? '' : 'none';
+            });
+        });
+    }
+
+    // Tri
+    headers.forEach(function(header) {
+        header.addEventListener('click', function() {
+            var column = this.dataset.sort;
+            var direction = 'asc';
+
+            if (currentSort.column === column && currentSort.direction === 'asc') {
+                direction = 'desc';
+            }
+
+            currentSort = { column: column, direction: direction };
+
+            // Mise à jour des icônes
+            headers.forEach(function(h) {
+                h.classList.remove('sort-asc', 'sort-desc');
+            });
+            this.classList.add('sort-' + direction);
+
+            // Tri des lignes
+            var rows = Array.from(tableBody.querySelectorAll('tr'));
+            rows.sort(function(a, b) {
+                var aVal, bVal;
+
+                switch(column) {
+                    case 'username':
+                        aVal = a.dataset.username || '';
+                        bVal = b.dataset.username || '';
+                        break;
+                    case 'email':
+                        aVal = a.dataset.email || '';
+                        bVal = b.dataset.email || '';
+                        break;
+                    case 'role':
+                        aVal = a.dataset.role || '';
+                        bVal = b.dataset.role || '';
+                        break;
+                    case 'status':
+                        aVal = a.dataset.status || '';
+                        bVal = b.dataset.status || '';
+                        break;
+                    case 'last_login':
+                        aVal = a.dataset.lastLogin || '';
+                        bVal = b.dataset.lastLogin || '';
+                        break;
+                    default:
+                        aVal = '';
+                        bVal = '';
+                }
+
+                if (direction === 'asc') {
+                    return aVal.localeCompare(bVal);
+                } else {
+                    return bVal.localeCompare(aVal);
+                }
+            });
+
+            rows.forEach(function(row) {
+                tableBody.appendChild(row);
+            });
+        });
+    });
+});
+</script>
 [% endblock %]
