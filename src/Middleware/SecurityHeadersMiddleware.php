@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * Middleware pour ajouter les headers de sécurité HTTP.
+ */
 declare(strict_types=1);
 
 namespace Blog\Middleware;
@@ -9,12 +11,13 @@ use Lunar\Service\Core\Http\Response;
 use Lunar\Service\Core\Middleware\MiddlewareInterface;
 
 /**
- * Middleware pour ajouter les headers de sécurité HTTP.
+ * Ajoute les headers de sécurité HTTP à toutes les réponses.
  *
- * Ajoute les headers recommandés pour la sécurité :
- * - Content-Security-Policy
+ * Headers configurés :
+ * - Content-Security-Policy (CSP)
  * - X-Frame-Options
  * - X-Content-Type-Options
+ * - X-XSS-Protection
  * - Referrer-Policy
  * - Permissions-Policy
  */
@@ -27,6 +30,9 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
     {
         /** @var Response $response */
         $response = $next($request);
+
+        // Récupérer les headers existants
+        $headers = $response->getHeaders();
 
         // Content-Security-Policy
         // Politique stricte mais permissive pour l'admin (inline styles/scripts pour l'éditeur)
@@ -41,16 +47,16 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
             "form-action 'self'",
             "base-uri 'self'",
         ]);
-        $response = $response->withHeader('Content-Security-Policy', $csp);
+        $headers[] = 'Content-Security-Policy: ' . $csp;
 
         // Empêcher le clickjacking
-        $response = $response->withHeader('X-Frame-Options', 'DENY');
+        $headers[] = 'X-Frame-Options: DENY';
 
         // Empêcher le MIME sniffing
-        $response = $response->withHeader('X-Content-Type-Options', 'nosniff');
+        $headers[] = 'X-Content-Type-Options: nosniff';
 
         // Contrôler les informations envoyées via Referer
-        $response = $response->withHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+        $headers[] = 'Referrer-Policy: strict-origin-when-cross-origin';
 
         // Désactiver certaines fonctionnalités du navigateur
         $permissions = implode(', ', [
@@ -63,11 +69,16 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
             'payment=()',
             'usb=()',
         ]);
-        $response = $response->withHeader('Permissions-Policy', $permissions);
+        $headers[] = 'Permissions-Policy: ' . $permissions;
 
         // Protection XSS (obsolète mais encore supporté par certains navigateurs)
-        $response = $response->withHeader('X-XSS-Protection', '1; mode=block');
+        $headers[] = 'X-XSS-Protection: 1; mode=block';
 
-        return $response;
+        // Créer une nouvelle réponse avec les headers de sécurité
+        return new Response(
+            $response->getBody(),
+            $response->getStatusCode(),
+            $headers
+        );
     }
 }

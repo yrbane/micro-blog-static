@@ -28,9 +28,12 @@ class AdminAuthController extends BaseController
         }
 
         $error = $_GET['error'] ?? null;
+        $blocked = $_GET['blocked'] ?? null;
+
         $html = $this->render('admin/auth/login', [
             'page_title' => 'Connexion',
             'error' => $error,
+            'blocked' => $blocked,
         ]);
 
         return new Response($html);
@@ -40,6 +43,15 @@ class AdminAuthController extends BaseController
     public function login(Request $request): Response
     {
         $auth = ServiceContainer::getAuthService();
+        $rateLimiter = ServiceContainer::getRateLimitService();
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+
+        // Vérifier le rate limiting
+        if (!$rateLimiter->isAllowed($ip, 'login')) {
+            $remaining = $rateLimiter->getBlockTimeRemaining($ip, 'login');
+            $minutes = ceil($remaining / 60);
+            return new Response('', 302, ['Location: /admin/login?blocked=' . $minutes]);
+        }
 
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
@@ -53,6 +65,8 @@ class AdminAuthController extends BaseController
         $user = $auth->login($email, $password);
 
         if ($user === null) {
+            // Enregistrer la tentative échouée
+            $rateLimiter->recordAttempt($ip, 'login');
             return new Response('', 302, ['Location: /admin/login?error=invalid']);
         }
 
@@ -61,6 +75,9 @@ class AdminAuthController extends BaseController
             $auth->logout();
             return new Response('', 302, ['Location: /admin/login?error=noaccess']);
         }
+
+        // Connexion réussie - réinitialiser le rate limiter
+        $rateLimiter->reset($ip, 'login');
 
         // Redirection après login
         $redirect = $_SESSION['redirect_after_login'] ?? '/admin';

@@ -18,6 +18,7 @@ class ServiceContainer
     private static ?PDO $pdo = null;
     private static ?AuthService $authService = null;
     private static ?OptionService $optionService = null;
+    private static ?RateLimitService $rateLimitService = null;
 
     /**
      * Récupère l'instance PDO.
@@ -58,6 +59,18 @@ class ServiceContainer
         }
 
         return self::$optionService;
+    }
+
+    /**
+     * Récupère le service de rate limiting.
+     */
+    public static function getRateLimitService(): RateLimitService
+    {
+        if (self::$rateLimitService === null) {
+            self::$rateLimitService = new RateLimitService(self::getPdo());
+        }
+
+        return self::$rateLimitService;
     }
 
     /**
