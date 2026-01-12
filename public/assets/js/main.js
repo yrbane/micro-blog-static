@@ -121,6 +121,86 @@
     }
 
     /**
+     * Prefetch navigation sur hover/focus
+     */
+    function initPrefetch() {
+        const prefetched = new Set();
+
+        function prefetch(url) {
+            if (prefetched.has(url)) return;
+            prefetched.add(url);
+
+            const link = document.createElement('link');
+            link.rel = 'prefetch';
+            link.href = url;
+            document.head.appendChild(link);
+        }
+
+        document.addEventListener('mouseover', function(event) {
+            const link = event.target.closest('a');
+            if (link && link.origin === window.location.origin && !link.hasAttribute('download')) {
+                prefetch(link.href);
+            }
+        });
+
+        document.addEventListener('focusin', function(event) {
+            const link = event.target.closest('a');
+            if (link && link.origin === window.location.origin && !link.hasAttribute('download')) {
+                prefetch(link.href);
+            }
+        });
+    }
+
+    /**
+     * Navigation clavier dans les résultats de recherche
+     */
+    function initSearchKeyboard() {
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+
+        if (!searchInput || !searchResults) return;
+
+        let currentIndex = -1;
+
+        searchInput.addEventListener('keydown', function(event) {
+            const results = searchResults.querySelectorAll('.search-result-item');
+            if (results.length === 0) return;
+
+            if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                currentIndex = Math.min(currentIndex + 1, results.length - 1);
+                updateActiveResult(results);
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                currentIndex = Math.max(currentIndex - 1, 0);
+                updateActiveResult(results);
+            } else if (event.key === 'Enter' && currentIndex >= 0) {
+                event.preventDefault();
+                results[currentIndex].click();
+            } else if (event.key === 'Escape') {
+                searchResults.hidden = true;
+                currentIndex = -1;
+            }
+        });
+
+        function updateActiveResult(results) {
+            results.forEach(function(result, index) {
+                result.classList.toggle('active', index === currentIndex);
+                if (index === currentIndex) {
+                    result.setAttribute('aria-selected', 'true');
+                } else {
+                    result.removeAttribute('aria-selected');
+                }
+            });
+        }
+
+        // Reset index quand l'input change
+        searchInput.addEventListener('input', function() {
+            currentIndex = -1;
+        });
+    }
+
+    /**
      * View Transitions API
      */
     function initViewTransitions() {
@@ -161,6 +241,8 @@
     function init() {
         initMobileNav();
         initSearch();
+        initSearchKeyboard();
+        initPrefetch();
         initViewTransitions();
     }
 

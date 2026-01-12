@@ -23,6 +23,7 @@ class ServiceContainer
     private static ?TagService $tagService = null;
     private static ?MediaService $mediaService = null;
     private static ?PostService $postService = null;
+    private static ?StaticGenerator $staticGenerator = null;
 
     /**
      * Récupère l'instance PDO.
@@ -123,6 +124,25 @@ class ServiceContainer
         }
 
         return self::$postService;
+    }
+
+    /**
+     * Récupère le générateur statique.
+     */
+    public static function getStaticGenerator(): StaticGenerator
+    {
+        if (self::$staticGenerator === null) {
+            self::$staticGenerator = new StaticGenerator(
+                self::getPdo(),
+                self::getPostService(),
+                self::getCategoryService(),
+                self::getTagService(),
+                self::getOptionService(),
+                self::getProjectRoot()
+            );
+        }
+
+        return self::$staticGenerator;
     }
 
     /**

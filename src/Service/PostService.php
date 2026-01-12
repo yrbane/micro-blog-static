@@ -187,6 +187,101 @@ class PostService
     }
 
     /**
+     * Récupère les articles publiés.
+     *
+     * @return array
+     */
+    public function findPublished(): array
+    {
+        $stmt = $this->pdo->query(
+            'SELECT p.*, u.username as author_name, c.name as category_name, c.path as category_path
+             FROM posts p
+             LEFT JOIN users u ON p.author_id = u.id
+             LEFT JOIN categories c ON p.category_id = c.id
+             WHERE p.status = "published"
+             ORDER BY p.is_featured DESC, p.published_at DESC'
+        );
+        $rows = $stmt->fetchAll();
+
+        return array_map(function($row) {
+            $post = Post::fromArray($row);
+            return [
+                'post' => $post,
+                'extra' => [
+                    'author_name' => $row['author_name'] ?? null,
+                    'category_name' => $row['category_name'] ?? null,
+                    'category_path' => $row['category_path'] ?? null,
+                    'tags' => $this->getTagsForPost($post->id),
+                ],
+            ];
+        }, $rows);
+    }
+
+    /**
+     * Récupère les articles d'une catégorie.
+     */
+    public function findByCategory(int $categoryId): array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT p.*, u.username as author_name
+             FROM posts p
+             LEFT JOIN users u ON p.author_id = u.id
+             WHERE p.category_id = ? AND p.status = "published"
+             ORDER BY p.published_at DESC'
+        );
+        $stmt->execute([$categoryId]);
+        $rows = $stmt->fetchAll();
+
+        return array_map(function($row) {
+            $post = Post::fromArray($row);
+            return [
+                'post' => $post,
+                'extra' => ['author_name' => $row['author_name'] ?? null],
+            ];
+        }, $rows);
+    }
+
+    /**
+     * Récupère les articles avec un tag.
+     */
+    public function findByTag(int $tagId): array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT p.*, u.username as author_name
+             FROM posts p
+             LEFT JOIN users u ON p.author_id = u.id
+             INNER JOIN post_tags pt ON p.id = pt.post_id
+             WHERE pt.tag_id = ? AND p.status = "published"
+             ORDER BY p.published_at DESC'
+        );
+        $stmt->execute([$tagId]);
+        $rows = $stmt->fetchAll();
+
+        return array_map(function($row) {
+            $post = Post::fromArray($row);
+            return [
+                'post' => $post,
+                'extra' => ['author_name' => $row['author_name'] ?? null],
+            ];
+        }, $rows);
+    }
+
+    /**
+     * Récupère les tags d'un article (avec noms).
+     */
+    private function getTagsForPost(int $postId): array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT t.id, t.name, t.slug
+             FROM tags t
+             INNER JOIN post_tags pt ON t.id = pt.tag_id
+             WHERE pt.post_id = ?'
+        );
+        $stmt->execute([$postId]);
+        return $stmt->fetchAll();
+    }
+
+    /**
      * Compte les articles par statut.
      *
      * @return array<string, int>
@@ -284,6 +379,9 @@ class PostService
      */
     public function parseMarkdown(string $markdown): string
     {
+        // Traiter les liens internes [[slug]] avant le parsing
+        $markdown = $this->parseInternalLinks($markdown);
+
         // Implémentation simple - on peut utiliser une librairie comme Parsedown
         $html = htmlspecialchars($markdown, ENT_QUOTES, 'UTF-8');
 
@@ -312,5 +410,80 @@ class PostService
         $html = preg_replace('/<\/(h[1-3]|ul|li)><\/p>/', '</$1>', $html);
 
         return $html;
+    }
+
+    /**
+     * Parse les liens internes [[slug]] et les convertit en liens Markdown.
+     *
+     * Formats supportés:
+     * - [[slug]] → [Titre](/post/slug/)
+     * - [[category:path]] → [Nom](/category/path/)
+     * - [[tag:slug]] → [Nom](/tag/slug/)
+     */
+    private function parseInternalLinks(string $content): string
+    {
+        // Pattern pour [[type:slug]] ou [[slug]]
+        return preg_replace_callback('/\[\[([^\]]+)\]\]/', function($matches) {
+            $ref = $matches[1];
+
+            // Détecter le type
+            if (str_starts_with($ref, 'category:')) {
+                $path = substr($ref, 9);
+                return $this->resolveCategoryLink($path);
+            }
+
+            if (str_starts_with($ref, 'tag:')) {
+                $slug = substr($ref, 4);
+                return $this->resolveTagLink($slug);
+            }
+
+            // Par défaut, c'est un article
+            return $this->resolvePostLink($ref);
+        }, $content);
+    }
+
+    /**
+     * Résout un lien vers un article.
+     */
+    private function resolvePostLink(string $slug): string
+    {
+        $post = $this->findBySlug($slug);
+        if ($post) {
+            return '[' . $post->title . '](/post/' . $slug . '/)';
+        }
+        // Lien cassé
+        return '[⚠ ' . $slug . '](/post/' . $slug . '/)';
+    }
+
+    /**
+     * Résout un lien vers une catégorie.
+     */
+    private function resolveCategoryLink(string $path): string
+    {
+        // Chercher par slug (dernier segment du path)
+        $slug = basename($path);
+        $stmt = $this->pdo->prepare('SELECT name FROM categories WHERE slug = ? OR path LIKE ?');
+        $stmt->execute([$slug, '%/' . $slug]);
+        $row = $stmt->fetch();
+
+        if ($row) {
+            return '[' . $row['name'] . '](/category/' . $path . '/)';
+        }
+        return '[⚠ ' . $path . '](/category/' . $path . '/)';
+    }
+
+    /**
+     * Résout un lien vers un tag.
+     */
+    private function resolveTagLink(string $slug): string
+    {
+        $stmt = $this->pdo->prepare('SELECT name FROM tags WHERE slug = ?');
+        $stmt->execute([$slug]);
+        $row = $stmt->fetch();
+
+        if ($row) {
+            return '[' . $row['name'] . '](/tag/' . $slug . '/)';
+        }
+        return '[⚠ ' . $slug . '](/tag/' . $slug . '/)';
     }
 }

@@ -75,6 +75,17 @@ class TagService
     }
 
     /**
+     * Récupère les tags d'un article (alias simplifié).
+     *
+     * @return array<array{id: int, name: string, slug: string}>
+     */
+    public function findByPost(int $postId): array
+    {
+        $tags = $this->findByPostId($postId);
+        return array_map(fn($t) => ['id' => $t->id, 'name' => $t->name, 'slug' => $t->slug], $tags);
+    }
+
+    /**
      * Crée un nouveau tag.
      */
     public function create(Tag $tag): Tag
