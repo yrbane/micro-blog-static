@@ -1,0 +1,18 @@
+{
+    "name": "Blog Admin",
+    "version": "1.0.0",
+    "debug": true,
+    "database": {
+        "driver": "sqlite",
+        "path": "data/blog.sqlite"
+    },
+    "paths": {
+        "data": "data",
+        "cache": "cache",
+        "logs": "logs",
+        "uploads": "public/uploads"
+    },
+    "site": {
+        "url": "http://localhost:8080"
+    }
+}

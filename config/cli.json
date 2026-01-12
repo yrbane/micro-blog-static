@@ -1,0 +1,7 @@
+{
+    "name": "Blog CLI",
+    "version": "1.0.0",
+    "commands": {
+        "Blog\\Command": "src/Command"
+    }
+}

@@ -1,4 +1,4 @@
-[% extends 'base.html.tpl' %]
+[% extends 'base.tpl' %]
 
 [% block body_class %]public[% endblock %]
 

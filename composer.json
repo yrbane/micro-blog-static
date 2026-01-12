@@ -19,7 +19,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Blog\\": "src/"
+            "Blog\\": "src/",
+            "Lunar\\Controller\\": "src/Controller/"
         }
     },
     "autoload-dev": {
@@ -28,6 +29,20 @@
         }
     },
     "repositories": [
+        {
+            "type": "path",
+            "url": "../lunar-cli",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../lunar-config",
+            "options": {
+                "symlink": true
+            }
+        },
         {
             "type": "path",
             "url": "../lunar-quanta",
