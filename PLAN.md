@@ -390,8 +390,28 @@ class Category extends \Lunar\Entity\Category
 }
 ```
 
-### Table SQLite supplémentaire
+### Tables SQLite supplémentaires
 ```sql
+-- Options du site (configuration clé-valeur)
+options (
+    id INTEGER PRIMARY KEY,
+    key TEXT UNIQUE NOT NULL,         -- 'site_name', 'site_description', 'site_url', etc.
+    value TEXT,                       -- Valeur (peut être JSON pour types complexes)
+    type TEXT DEFAULT 'string',       -- 'string', 'text', 'boolean', 'integer', 'json', 'image'
+    group_name TEXT DEFAULT 'general',-- 'general', 'seo', 'social', 'appearance'
+    label TEXT,                       -- Label affiché dans l'admin
+    description TEXT,                 -- Description/aide
+    sort_order INTEGER DEFAULT 0,
+    updated_at DATETIME
+)
+
+-- Options prédéfinies :
+-- general: site_name, site_description, site_url, site_logo, site_favicon, site_language
+-- seo: meta_title_suffix, meta_description_default, robots_txt
+-- social: twitter_handle, facebook_url, github_url, og_default_image
+-- appearance: posts_per_page, excerpt_length, date_format, theme_color
+-- contact: admin_email, contact_email
+
 -- Rate limiting
 rate_limits (
     id INTEGER PRIMARY KEY,

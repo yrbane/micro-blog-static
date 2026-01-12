@@ -41,8 +41,9 @@
 | ~~#16~~ | ~~Service Slugs~~ | ✅ Fourni |
 | ~~#17~~ | ~~Validation données~~ | ✅ Fourni |
 | #18 | Tests des extensions | À faire |
+| **#59** | **Entity Option et OptionService** | À faire |
 
-**Reste à faire** : 4 issues (#10, #11, #14, #18)
+**Reste à faire** : 5 issues (#10, #11, #14, #18, #59)
 
 ---
 
@@ -72,8 +73,9 @@
 | #29 | Autocomplétion liens | À faire |
 | #30 | Messages et notifications | À faire |
 | #31 | Tests e2e Admin | À faire |
+| **#60** | **CRUD Options UI (paramètres site)** | À faire |
 
-**Reste à faire** : 9 issues (toutes)
+**Reste à faire** : 10 issues
 
 ---
 
@@ -136,13 +138,13 @@
 | Milestone | Total | Fermées | Restantes |
 |-----------|-------|---------|-----------|
 | M1 - Core | 9 | 6 | **3** |
-| M2 - Models | 9 | 5 | **4** |
+| M2 - Models | 10 | 5 | **5** |
 | M3 - Markdown | 4 | 3 | **1** |
-| M4 - Admin | 9 | 0 | **9** |
+| M4 - Admin | 10 | 0 | **10** |
 | M5 - Generator | 10 | 2 | **8** |
 | M6 - Frontend | 10 | 0 | **10** |
 | M7 - Optim | 7 | 0 | **7** |
-| **TOTAL** | **58** | **16** | **42** |
+| **TOTAL** | **60** | **16** | **44** |
 
 **~28% du travail économisé** grâce à lunar-quanta et lunar-template.
 
@@ -152,7 +154,7 @@
 
 ```
 M1 ──→ M2 ──→ M3 ──→ M4 ──→ M5 ──→ M6 ──→ M7
-[3]    [4]    [1]    [9]    [8]   [10]    [7]
+[3]    [5]    [1]   [10]    [8]   [10]    [7]
          ↓
     Focus principal : Admin (M4) + Frontend (M6)
 ```
