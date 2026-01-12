@@ -1,116 +1,160 @@
 # Roadmap - Micro Blog Statique
 
-## Milestones
+## Stack
+
+- **Framework** : lunar-quanta (PHP 8.3+)
+- **Templates** : lunar-template
+- **BDD** : SQLite
 
 ---
 
-### M1 - Fondations (Core)
-**Objectif** : Infrastructure de base, routing, sécurité, base de données
+## Milestones (révisés)
 
-- Configuration projet (structure, autoloading PSR-4)
-- Kernel applicatif (bootstrap, configuration)
-- Router minimaliste
-- Connexion SQLite + migrations
-- Système d'authentification (Argon2id, sessions sécurisées)
-- Protection CSRF
-- Rate limiting
-- Middleware de sécurité (headers)
-- Tests unitaires core
+### M1 - Fondations (Core) ✅ Majoritairement couvert par lunar-quanta
 
----
+| Issue | Titre | Statut |
+|-------|-------|--------|
+| ~~#1~~ | ~~Structure projet et autoloading~~ | ✅ Fourni |
+| ~~#2~~ | ~~Kernel applicatif~~ | ✅ Fourni |
+| ~~#3~~ | ~~Router minimaliste~~ | ✅ Fourni |
+| #4 | Migrations SQLite spécifiques | À faire |
+| ~~#5~~ | ~~Authentification sécurisée~~ | ✅ Fourni |
+| ~~#6~~ | ~~Protection CSRF~~ | ✅ Fourni |
+| #7 | Rate limiting | À faire |
+| #8 | Headers de sécurité | À faire |
+| ~~#9~~ | ~~Tests unitaires Core~~ | ✅ Fourni |
 
-### M2 - Modèles & CRUD
-**Objectif** : Entités métier et opérations CRUD complètes
-
-- Model Post (avec slug immuable)
-- Model Category (arbre hiérarchique)
-- Model Tag
-- Repository pattern pour chaque entité
-- Service de gestion des slugs
-- Service de gestion de l'arbre catégories
-- Validation des données
-- Tests unitaires models/services
+**Reste à faire** : 3 issues (#4, #7, #8)
 
 ---
 
-### M3 - Parser Markdown
-**Objectif** : Conversion Markdown → HTML sécurisée
+### M2 - Modèles & CRUD ✅ Majoritairement couvert par lunar-quanta
 
-- Parser Markdown minimaliste (titres, paragraphes, listes, code, liens, images, gras, italique)
-- Sanitizer HTML (whitelist stricte)
-- Support liens internes `[[slug]]`
-- Échappement XSS
-- Tests unitaires parser + tests sécurité (payloads XSS)
+| Issue | Titre | Statut |
+|-------|-------|--------|
+| #10 | Extension Post avec slug immuable | À faire |
+| #11 | Extension Category avec arbre | À faire |
+| ~~#12~~ | ~~Model Tag~~ | ✅ Fourni |
+| ~~#13~~ | ~~Repository Posts~~ | ✅ Fourni |
+| #14 | Service CategoryTree | À faire |
+| ~~#15~~ | ~~Repository Tags~~ | ✅ Fourni |
+| ~~#16~~ | ~~Service Slugs~~ | ✅ Fourni |
+| ~~#17~~ | ~~Validation données~~ | ✅ Fourni |
+| #18 | Tests des extensions | À faire |
 
----
-
-### M4 - Interface Admin
-**Objectif** : UI admin fonctionnelle
-
-- Layout admin (HTML/CSS)
-- Dashboard
-- Formulaires CRUD Posts
-- Formulaires CRUD Catégories (avec tree view)
-- Formulaires CRUD Tags
-- Éditeur Markdown avec preview live
-- Autocomplétion liens internes
-- Messages flash / notifications
-- Tests e2e admin
+**Reste à faire** : 4 issues (#10, #11, #14, #18)
 
 ---
 
-### M5 - Moteur de Génération
-**Objectif** : Génération des pages statiques
+### M3 - Parser Markdown ✅ Majoritairement couvert par lunar-quanta
 
-- Moteur de templates (sans lib)
-- Générateur de pages posts
-- Générateur index (avec pagination)
-- Générateur pages catégories
-- Générateur pages tags
-- Génération sitemap.xml
-- Génération feed RSS/Atom
-- Génération index JSON (recherche)
-- Système de verrou (concurrence)
-- Génération incrémentale (détection changements)
-- Tests unitaires génération
+| Issue | Titre | Statut |
+|-------|-------|--------|
+| ~~#19~~ | ~~Parser Markdown base~~ | ✅ Fourni |
+| #20 | Support liens internes [[slug]] | À faire |
+| ~~#21~~ | ~~Sanitizer HTML~~ | ✅ Fourni |
+| ~~#22~~ | ~~Tests parser + sécurité~~ | ✅ Fourni |
+
+**Reste à faire** : 1 issue (#20)
 
 ---
 
-### M6 - Frontend Public
-**Objectif** : Design et interactivité du site statique
+### M4 - Interface Admin 🔧 À développer
 
-- Structure HTML sémantique
-- CSS moderne (layers, custom properties, container queries)
-- Composants : header, navigation, cards, pagination
-- Page post (typographie, code highlighting CSS)
-- Pages listing (index, catégorie, tag)
-- JavaScript minimal (prefetch, view transitions, recherche)
-- Responsive design
-- Accessibilité (a11y)
-- Tests visuels / snapshot
+| Issue | Titre | Statut |
+|-------|-------|--------|
+| #23 | Layout admin | À faire |
+| #24 | Dashboard | À faire |
+| #25 | CRUD Posts UI | À faire |
+| #26 | CRUD Catégories UI | À faire |
+| #27 | CRUD Tags UI | À faire |
+| #28 | Éditeur Markdown | À faire |
+| #29 | Autocomplétion liens | À faire |
+| #30 | Messages et notifications | À faire |
+| #31 | Tests e2e Admin | À faire |
 
----
-
-### M7 - Optimisation & Sécurité Finale
-**Objectif** : Performance, sécurité, polish
-
-- Minification HTML/CSS/JS
-- Audit sécurité complet
-- Headers de sécurité (CSP, etc.)
-- Optimisation images (lazy loading, dimensions)
-- Cache busting assets
-- Documentation utilisateur
-- Documentation technique
-- Tests de charge basiques
-- Tests sécurité e2e (injections, CSRF)
+**Reste à faire** : 9 issues (toutes)
 
 ---
 
-## Timeline Visuelle
+### M5 - Moteur de Génération 🔧 Adaptation nécessaire
+
+| Issue | Titre | Statut |
+|-------|-------|--------|
+| ~~#32~~ | ~~Moteur templates~~ | ✅ Fourni (lunar-template) |
+| #33 | Adaptation générateur posts | À faire |
+| #34 | Adaptation générateur index | À faire |
+| #35 | Adaptation générateur catégories | À faire |
+| #36 | Adaptation générateur tags | À faire |
+| ~~#37~~ | ~~Sitemap et RSS~~ | ✅ Fourni |
+| #38 | Index JSON recherche | À faire |
+| #39 | Système verrou | À faire |
+| #40 | Génération incrémentale | À faire |
+| #41 | Tests génération | À faire |
+
+**Reste à faire** : 7 issues
+
+---
+
+### M6 - Frontend Public 🔧 À développer
+
+| Issue | Titre | Statut |
+|-------|-------|--------|
+| #42 | Structure HTML | À faire |
+| #43 | Architecture CSS | À faire |
+| #44 | Composants UI | À faire |
+| #45 | Page post | À faire |
+| #46 | Pages listing | À faire |
+| #47 | JavaScript minimal | À faire |
+| #48 | Recherche client | À faire |
+| #49 | Responsive et a11y | À faire |
+| #50 | Tests frontend | À faire |
+
+**Reste à faire** : 9 issues (toutes)
+
+---
+
+### M7 - Optimisation & Sécurité Finale 🔧 À faire
+
+| Issue | Titre | Statut |
+|-------|-------|--------|
+| #51 | Minification | À faire |
+| #52 | Audit sécurité | À faire |
+| #53 | Optimisation images | À faire |
+| #54 | Cache et assets | À faire |
+| #55 | Documentation utilisateur | À faire |
+| #56 | Documentation technique | À faire |
+| #57 | Tests finaux | À faire |
+
+**Reste à faire** : 7 issues (toutes)
+
+---
+
+## Résumé
+
+| Milestone | Total | Fermées | Restantes |
+|-----------|-------|---------|-----------|
+| M1 - Core | 9 | 6 | **3** |
+| M2 - Models | 9 | 5 | **4** |
+| M3 - Markdown | 4 | 3 | **1** |
+| M4 - Admin | 9 | 0 | **9** |
+| M5 - Generator | 10 | 2 | **8** |
+| M6 - Frontend | 9 | 0 | **9** |
+| M7 - Optim | 7 | 0 | **7** |
+| **TOTAL** | **57** | **16** | **41** |
+
+**~28% du travail économisé** grâce à lunar-quanta et lunar-template.
+
+---
+
+## Timeline Visuelle (révisée)
 
 ```
 M1 ──→ M2 ──→ M3 ──→ M4 ──→ M5 ──→ M6 ──→ M7
-Core   Models  MD    Admin  Gen   Front  Polish
+[3]    [4]    [1]    [9]    [8]    [9]    [7]
+         ↓
+    Focus principal : Admin (M4) + Frontend (M6)
 ```
 
-Chaque milestone est indépendamment testable et livrable.
+Les milestones M1, M2, M3 sont maintenant légers.
+Le gros du travail est sur **M4 (Admin)** et **M6 (Frontend)**.
