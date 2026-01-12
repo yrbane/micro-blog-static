@@ -160,20 +160,175 @@ blog/
 │       ├── RateLimitMiddleware.php
 │       └── SecurityHeadersMiddleware.php
 ├── templates/
+│   ├── base.html.tpl          # Layout principal (TOUTES les pages héritent)
+│   ├── mail.html.tpl          # Layout emails (tous les mails héritent)
 │   ├── admin/                 # Templates admin
-│   │   ├── base.html.tpl
+│   │   ├── layout.html.tpl    # extends base.html.tpl (sidebar, nav admin)
 │   │   ├── dashboard.html.tpl
 │   │   ├── post/
+│   │   │   ├── list.html.tpl
+│   │   │   └── form.html.tpl
 │   │   ├── category/
 │   │   └── tag/
-│   └── public/                # Templates site statique
-│       ├── base.html.tpl
-│       ├── index.html.tpl
-│       ├── post.html.tpl
-│       ├── category.html.tpl
-│       ├── tag.html.tpl
-│       └── components/
+│   ├── public/                # Templates site statique
+│   │   ├── layout.html.tpl    # extends base.html.tpl (header, footer public)
+│   │   ├── index.html.tpl
+│   │   ├── post.html.tpl
+│   │   ├── category.html.tpl
+│   │   ├── tag.html.tpl
+│   │   └── components/
+│   └── mail/                  # Templates emails
+│       ├── welcome.html.tpl   # extends mail.html.tpl
+│       ├── reset-password.html.tpl
+│       └── notification.html.tpl
 └── tests/
+```
+
+---
+
+## Architecture des templates (héritage unifié)
+
+Tous les templates utilisent le système d'héritage de lunar-template.
+
+### Hiérarchie des pages
+
+```
+base.html.tpl                    ← Layout racine (HTML, head, body, scripts)
+├── admin/layout.html.tpl        ← Layout admin (sidebar, nav, zone contenu)
+│   ├── admin/dashboard.html.tpl
+│   ├── admin/post/list.html.tpl
+│   ├── admin/post/form.html.tpl
+│   └── ...
+└── public/layout.html.tpl       ← Layout public (header, footer, main)
+    ├── public/index.html.tpl
+    ├── public/post.html.tpl
+    ├── public/category.html.tpl
+    └── ...
+```
+
+### Hiérarchie des emails
+
+```
+mail.html.tpl                    ← Layout email (DOCTYPE, styles inline, structure)
+├── mail/welcome.html.tpl
+├── mail/reset-password.html.tpl
+└── mail/notification.html.tpl
+```
+
+### Template base.html.tpl (exemple)
+
+```html
+<!DOCTYPE html>
+<html lang="[[ lang | default('fr') ]]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[% block title %]Blog[% endblock %]</title>
+    <meta name="description" content="[% block description %][% endblock %]">
+    [% block meta %][% endblock %]
+    [% block styles %]
+    <link rel="stylesheet" href="/assets/css/main.css">
+    [% endblock %]
+</head>
+<body class="[% block body_class %][% endblock %]">
+    [% block body %]
+    [% endblock %]
+
+    [% block scripts %]
+    <script type="module" src="/assets/js/main.js"></script>
+    [% endblock %]
+</body>
+</html>
+```
+
+### Template admin/layout.html.tpl (exemple)
+
+```html
+[% extends 'base.html.tpl' %]
+
+[% block styles %]
+[% parent %]
+<link rel="stylesheet" href="/assets/css/admin.css">
+[% endblock %]
+
+[% block body_class %]admin[% endblock %]
+
+[% block body %]
+<div class="admin-layout">
+    <aside class="admin-sidebar">
+        [% include 'admin/components/nav.html.tpl' %]
+    </aside>
+    <main class="admin-main">
+        <header class="admin-header">
+            [% block header %][% endblock %]
+        </header>
+        <div class="admin-content">
+            [% block content %][% endblock %]
+        </div>
+    </main>
+</div>
+[% endblock %]
+```
+
+### Template public/layout.html.tpl (exemple)
+
+```html
+[% extends 'base.html.tpl' %]
+
+[% block body_class %]public[% endblock %]
+
+[% block body %]
+<header class="site-header">
+    [% include 'public/components/header.html.tpl' %]
+</header>
+
+<main class="site-main">
+    [% block content %][% endblock %]
+</main>
+
+<footer class="site-footer">
+    [% include 'public/components/footer.html.tpl' %]
+</footer>
+[% endblock %]
+```
+
+### Template mail.html.tpl (exemple)
+
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[% block subject %]Notification[% endblock %]</title>
+    <style>
+        /* Styles inline pour compatibilité email */
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #1a1a2e; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #ffffff; }
+        .footer { padding: 20px; text-align: center; font-size: 12px; color: #666; }
+        .button { display: inline-block; padding: 12px 24px; background: #4f46e5; color: white; text-decoration: none; border-radius: 6px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            [% block header %]
+            <h1>[[ siteName ]]</h1>
+            [% endblock %]
+        </div>
+        <div class="content">
+            [% block content %][% endblock %]
+        </div>
+        <div class="footer">
+            [% block footer %]
+            <p>&copy; [[ year ]] [[ siteName ]]</p>
+            [% endblock %]
+        </div>
+    </div>
+</body>
+</html>
 ```
 
 ---

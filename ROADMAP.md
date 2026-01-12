@@ -100,7 +100,8 @@
 
 | Issue | Titre | Statut |
 |-------|-------|--------|
-| #42 | Structure HTML | À faire |
+| **#58** | **Templates de base (base.html.tpl + mail.html.tpl)** | À faire |
+| #42 | Structure HTML (layout public) | À faire |
 | #43 | Architecture CSS | À faire |
 | #44 | Composants UI | À faire |
 | #45 | Page post | À faire |
@@ -110,7 +111,7 @@
 | #49 | Responsive et a11y | À faire |
 | #50 | Tests frontend | À faire |
 
-**Reste à faire** : 9 issues (toutes)
+**Reste à faire** : 10 issues
 
 ---
 
@@ -139,9 +140,9 @@
 | M3 - Markdown | 4 | 3 | **1** |
 | M4 - Admin | 9 | 0 | **9** |
 | M5 - Generator | 10 | 2 | **8** |
-| M6 - Frontend | 9 | 0 | **9** |
+| M6 - Frontend | 10 | 0 | **10** |
 | M7 - Optim | 7 | 0 | **7** |
-| **TOTAL** | **57** | **16** | **41** |
+| **TOTAL** | **58** | **16** | **42** |
 
 **~28% du travail économisé** grâce à lunar-quanta et lunar-template.
 
@@ -151,7 +152,7 @@
 
 ```
 M1 ──→ M2 ──→ M3 ──→ M4 ──→ M5 ──→ M6 ──→ M7
-[3]    [4]    [1]    [9]    [8]    [9]    [7]
+[3]    [4]    [1]    [9]    [8]   [10]    [7]
          ↓
     Focus principal : Admin (M4) + Frontend (M6)
 ```
