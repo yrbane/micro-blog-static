@@ -19,6 +19,10 @@ class ServiceContainer
     private static ?AuthService $authService = null;
     private static ?OptionService $optionService = null;
     private static ?RateLimitService $rateLimitService = null;
+    private static ?CategoryService $categoryService = null;
+    private static ?TagService $tagService = null;
+    private static ?MediaService $mediaService = null;
+    private static ?PostService $postService = null;
 
     /**
      * Récupère l'instance PDO.
@@ -71,6 +75,54 @@ class ServiceContainer
         }
 
         return self::$rateLimitService;
+    }
+
+    /**
+     * Récupère le service des catégories.
+     */
+    public static function getCategoryService(): CategoryService
+    {
+        if (self::$categoryService === null) {
+            self::$categoryService = new CategoryService(self::getPdo());
+        }
+
+        return self::$categoryService;
+    }
+
+    /**
+     * Récupère le service des tags.
+     */
+    public static function getTagService(): TagService
+    {
+        if (self::$tagService === null) {
+            self::$tagService = new TagService(self::getPdo());
+        }
+
+        return self::$tagService;
+    }
+
+    /**
+     * Récupère le service des médias.
+     */
+    public static function getMediaService(): MediaService
+    {
+        if (self::$mediaService === null) {
+            self::$mediaService = new MediaService(self::getPdo(), self::getProjectRoot());
+        }
+
+        return self::$mediaService;
+    }
+
+    /**
+     * Récupère le service des articles.
+     */
+    public static function getPostService(): PostService
+    {
+        if (self::$postService === null) {
+            self::$postService = new PostService(self::getPdo());
+        }
+
+        return self::$postService;
     }
 
     /**

@@ -1,0 +1,134 @@
+[% extends "admin/layout.tpl" %]
+
+[% block content %]
+<div class="page-header">
+    <div class="page-header-content">
+        <a href="/admin/categories" class="btn btn-ghost btn-sm mb-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Retour à la liste
+        </a>
+        <h2>[% if category.id %]Modifier la catégorie[% else %]Nouvelle catégorie[% endif %]</h2>
+    </div>
+</div>
+
+[% if errors.general %]
+<div class="alert alert-error">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="15" y1="9" x2="9" y2="15"></line>
+        <line x1="9" y1="9" x2="15" y2="15"></line>
+    </svg>
+    <span>[[ errors.general ]]</span>
+</div>
+[% endif %]
+
+<div class="card">
+    <form method="POST">
+        <div class="card-body">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="name" class="form-label form-label-required">Nom</label>
+                    <input type="text"
+                           id="name"
+                           name="name"
+                           class="form-input [% if errors.name %]is-invalid[% endif %]"
+                           value="[[ category.name ]]"
+                           required
+                           minlength="2">
+                    [% if errors.name %]
+                    <div class="form-error">[[ errors.name ]]</div>
+                    [% endif %]
+                </div>
+
+                <div class="form-group">
+                    <label for="slug" class="form-label">Slug</label>
+                    <input type="text"
+                           id="slug"
+                           name="slug"
+                           class="form-input [% if errors.slug %]is-invalid[% endif %]"
+                           value="[[ category.slug ]]"
+                           pattern="[a-z0-9-]+"
+                           placeholder="genere-automatiquement">
+                    [% if errors.slug %]
+                    <div class="form-error">[[ errors.slug ]]</div>
+                    [% endif %]
+                    <div class="form-hint">Laissez vide pour générer automatiquement</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="parent_id" class="form-label">Catégorie parente</label>
+                    <select id="parent_id" name="parent_id" class="form-select">
+                        <option value="">— Aucune (racine) —</option>
+                        [% for parent in parents %]
+                        <option value="[[ parent.id ]]" [% if category.parent_id == parent.id %]selected[% endif %]>
+                            [[ parent.name ]]
+                        </option>
+                        [% endfor %]
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="sort_order" class="form-label">Ordre d'affichage</label>
+                    <input type="number"
+                           id="sort_order"
+                           name="sort_order"
+                           class="form-input"
+                           value="[[ category.sort_order ]]"
+                           min="0">
+                    <div class="form-hint">Les catégories sont triées par ordre croissant</div>
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea id="description"
+                              name="description"
+                              class="form-input"
+                              rows="3"
+                              placeholder="Description optionnelle de la catégorie...">[[ category.description ]]</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <div class="flex justify-between items-center">
+                <a href="/admin/categories" class="btn btn-ghost">Annuler</a>
+                <button type="submit" class="btn btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    [% if category.id %]Enregistrer[% else %]Créer la catégorie[% endif %]
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var nameInput = document.getElementById('name');
+    var slugInput = document.getElementById('slug');
+
+    if (nameInput && slugInput) {
+        nameInput.addEventListener('input', function() {
+            if (slugInput.value === '' || slugInput.dataset.autoGenerated === 'true') {
+                var slug = this.value.toLowerCase()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/^-+|-+$/g, '');
+                slugInput.value = slug;
+                slugInput.dataset.autoGenerated = 'true';
+            }
+        });
+
+        slugInput.addEventListener('input', function() {
+            this.dataset.autoGenerated = 'false';
+        });
+    }
+});
+</script>
+[% endblock %]
