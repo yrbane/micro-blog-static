@@ -1,0 +1,41 @@
+# Données
+/data/*.sqlite
+/data/*.db
+
+# Configuration locale
+/config/config.local.php
+.env
+.env.local
+
+# Dépendances (si jamais)
+/vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+/logs/
+
+# Cache
+/cache/
+*.cache
+
+# Généré (optionnel - à décider si on versionne le public ou non)
+# /public/post/
+# /public/category/
+# /public/tag/
+# /public/sitemap.xml
+# /public/feed.xml
+
+# Tests
+/coverage/
+.phpunit.result.cache
