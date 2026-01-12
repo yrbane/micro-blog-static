@@ -8,28 +8,101 @@
  * - Confirmation de suppression
  * - Messages flash auto-dismiss
  * - Formulaires dynamiques
+ * - Theme toggle (light/dark mode)
  */
 
 (function() {
     'use strict';
 
     /**
+     * Theme toggle (dark/light mode)
+     */
+    function initThemeToggle() {
+        const themeToggle = document.getElementById('themeToggle');
+        if (!themeToggle) return;
+
+        themeToggle.addEventListener('click', function() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('admin-theme', newTheme);
+
+            // Update charts if they exist
+            updateChartsTheme(newTheme === 'dark');
+        });
+    }
+
+    /**
+     * Update Chart.js theme colors
+     */
+    function updateChartsTheme(isDark) {
+        if (typeof Chart === 'undefined') return;
+
+        const textColor = isDark ? '#94a3b8' : '#64748b';
+        const gridColor = isDark ? 'rgba(148, 163, 184, 0.1)' : 'rgba(100, 116, 139, 0.1)';
+
+        Chart.defaults.color = textColor;
+        Chart.defaults.borderColor = gridColor;
+
+        // Update all chart instances
+        Chart.helpers.each(Chart.instances, function(chart) {
+            if (chart.options.scales) {
+                if (chart.options.scales.y) {
+                    chart.options.scales.y.grid.color = gridColor;
+                    chart.options.scales.y.ticks.color = textColor;
+                }
+                if (chart.options.scales.x) {
+                    chart.options.scales.x.ticks.color = textColor;
+                }
+            }
+            if (chart.options.plugins && chart.options.plugins.legend) {
+                chart.options.plugins.legend.labels.color = textColor;
+            }
+            chart.update('none');
+        });
+    }
+
+    /**
      * Navigation sidebar mobile
      */
     function initSidebar() {
         const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarClose = document.getElementById('sidebarClose');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
         const sidebar = document.querySelector('.admin-sidebar');
 
-        if (!sidebarToggle || !sidebar) return;
+        if (!sidebar) return;
 
-        sidebarToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('open');
-        });
+        function openSidebar() {
+            sidebar.classList.add('open');
+            if (sidebarOverlay) sidebarOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
 
-        // Fermer la sidebar quand on clique en dehors
-        document.addEventListener('click', function(event) {
-            if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
-                sidebar.classList.remove('open');
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', openSidebar);
+        }
+
+        if (sidebarClose) {
+            sidebarClose.addEventListener('click', closeSidebar);
+        }
+
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', closeSidebar);
+        }
+
+        // Fermer avec Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && sidebar.classList.contains('open')) {
+                closeSidebar();
             }
         });
     }
@@ -407,6 +480,7 @@
      * Initialisation
      */
     function init() {
+        initThemeToggle();
         initSidebar();
         initUserMenu();
         initModals();
