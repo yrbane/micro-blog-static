@@ -1,0 +1,10 @@
+{
+    "template": {
+        "engine": "Lunar\\Template\\AdvancedTemplateEngine",
+        "template_path": "templates",
+        "cache_path": "cache/templates",
+        "extension": ".html.tpl",
+        "strict_variables": false,
+        "auto_escape": true
+    }
+}

@@ -1,0 +1,58 @@
+{
+    "name": "yrbane/micro-blog-static",
+    "description": "Micro-système de blog avec admin PHP générant des pages HTML statiques",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Yrbane",
+            "email": "contact@yrbane.dev"
+        }
+    ],
+    "require": {
+        "php": ">=8.3",
+        "yrbane/lunar-quanta": "@dev",
+        "yrbane/lunar-template": "@dev"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Blog\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Blog\\Tests\\": "tests/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../lunar-quanta",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../lunar-template",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "scripts": {
+        "test": "phpunit",
+        "serve": "php -S localhost:8080 -t admin/public",
+        "generate": "php bin/generate.php"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

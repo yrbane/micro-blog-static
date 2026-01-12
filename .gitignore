@@ -1,14 +1,33 @@
 # Données
 /data/*.sqlite
 /data/*.db
+!/data/.gitkeep
 
 # Configuration locale
-/config/config.local.php
 .env
 .env.local
+/config/config.local.php
 
-# Dépendances (si jamais)
+# Dépendances
 /vendor/
+
+# Cache
+/cache/*
+!/cache/.gitkeep
+*.cache
+
+# Logs
+/logs/*
+!/logs/.gitkeep
+*.log
+
+# Contenu généré (optionnel - décommenter si on ne versionne pas)
+# /public/post/
+# /public/category/
+# /public/tag/
+# /public/sitemap.xml
+# /public/feed.xml
+# /public/search-index.json
 
 # IDE
 .idea/
@@ -21,21 +40,11 @@
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
-/logs/
-
-# Cache
-/cache/
-*.cache
-
-# Généré (optionnel - à décider si on versionne le public ou non)
-# /public/post/
-# /public/category/
-# /public/tag/
-# /public/sitemap.xml
-# /public/feed.xml
-
 # Tests
 /coverage/
 .phpunit.result.cache
+.phpunit.cache/
+
+# Divers
+*.bak
+*.tmp
